@@ -1,0 +1,31 @@
+version: "3"
+services:
+  customers-db:
+    image: postgres:9.6-alpine
+    volumes:
+      - ./data/:/data
+    ports:
+      - 5432:5432
+    container_name: customers-db
+    environment:
+      - POSTGRES_PASSWORD=
+      - POSTGRES_USER=postgres
+    restart: always
+    networks:
+      - app-network
+
+  customers-schema:
+    build: db/
+    container_name: customers-schema
+    env_file: .env.example
+    environment:
+      DB_NAME: customers
+    depends_on:
+      - customers-db
+    command: ["./init-db.sh"]
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

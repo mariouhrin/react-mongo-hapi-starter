@@ -1,0 +1,20 @@
+{
+  "name": "react-hapi-postgresql-app",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "version": "1.0.0",
+  "author": "Mario Uhrin",
+  "license": "MIT",
+  "scripts": {
+    "copy:env": "cd ./backend/scripts && ./copy-env.sh",
+    "db": "cd ./backend && yarn start:db",
+    "frontend": "cd ./frontend && yarn start",
+    "server": "cd ./backend && yarn start:server",
+    "start": "yarn db && npm-run-all -p server frontend",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "db-it": "./backend/scripts/interactive-db.sh"
+  }
+}
