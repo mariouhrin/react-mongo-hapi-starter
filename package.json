@@ -13,8 +13,6 @@
     "db": "cd ./backend && yarn start:db",
     "frontend": "cd ./frontend && yarn start",
     "server": "cd ./backend && yarn start:server",
-    "start": "yarn db && npm-run-all -p server frontend",
-    "lint": "tslint -c tslint.json -p tsconfig.json",
-    "db-it": "./backend/scripts/interactive-db.sh"
+    "start": "yarn db && npm-run-all -p server frontend"
   }
 }

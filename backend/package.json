@@ -3,14 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "start:server:debug": "cross-env-shell node --inspect=9428 $NODE_DEBUG_OPTION --require ts-node/register server.ts",
     "start:server": "nodemon",
     "start:db": "./scripts/run-mongo.sh && yarn init:db",
     "init:db": "ts-node ./db/connectAndInitDB.ts",
-    "start:prod": "node dist/server.js",
-    "db:stop": "docker-compose -f docker.compose.yml down",
-    "lint": "tslint -c ./../../tslint.json -p ./../../tsconfig.json",
     "prettier": "prettier --write \"**/*.{js,json,md,ts}\""
   },
   "dependencies": {
