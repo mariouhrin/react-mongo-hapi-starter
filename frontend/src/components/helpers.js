@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function tableColumnsAllCustomers(handleOpenModal, deleteCustomerByGuid) {
+export function tableColumnsAllCustomers(handleOpenModal, deleteCustomerByID) {
   const headersAndColumnWidth = {
     name: 150,
     balance: 70,
@@ -18,10 +18,10 @@ export function tableColumnsAllCustomers(handleOpenModal, deleteCustomerByGuid) 
 
   // set style and events for update button
   const cellLinkUpdate = (row) => {
-    const { guid } = row.original;
+    const { _id } = row.original;
 
     return (
-      <button type="button" tabIndex={0} style={cellStyle} onClick={() => handleOpenModal(guid)}>
+      <button type="button" tabIndex={0} style={cellStyle} onClick={() => handleOpenModal(_id)}>
         {row.value}
       </button>
     );
@@ -29,15 +29,10 @@ export function tableColumnsAllCustomers(handleOpenModal, deleteCustomerByGuid) 
 
   // set style and events for delete button
   const cellLinkDelete = (row) => {
-    const { guid } = row.original;
+    const { _id } = row.original;
 
     return (
-      <button
-        type="button"
-        tabIndex={0}
-        style={cellStyle}
-        onClick={() => deleteCustomerByGuid(guid)}
-      >
+      <button type="button" tabIndex={0} style={cellStyle} onClick={() => deleteCustomerByID(_id)}>
         {row.value}
       </button>
     );
@@ -96,7 +91,7 @@ export function customFilter(filter, row) {
 export function inititialFormData(dataForUpdate) {
   if (dataForUpdate.length) {
     return {
-      guid: dataForUpdate[0].guid,
+      _id: dataForUpdate[0]._id,
       name: dataForUpdate[0].name,
       balance: dataForUpdate[0].balance,
       phone: dataForUpdate[0].phone,

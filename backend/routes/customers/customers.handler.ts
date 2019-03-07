@@ -6,7 +6,12 @@ import uuidv4 from 'uuid/v4';
 
 import { IExtendedRequest } from '../../types/interfaces/request.interface';
 import { getBoomError, NotFoundError } from '../../utils/error-utils';
-import { getCustomersCollection, getSequenceCollection, getNextSeq } from './customers.utils';
+import {
+  transformDataToRender,
+  getCustomersCollection,
+  getSequenceCollection,
+  getNextSeq
+} from './customers.utils';
 
 export async function getAllCustomers(request: IExtendedRequest, h: ResponseToolkit) {
   try {
@@ -17,7 +22,9 @@ export async function getAllCustomers(request: IExtendedRequest, h: ResponseTool
       throw new NotFoundError('Not found customers data');
     }
 
-    return h.response(allCustomers).code(200);
+    const transformData = transformDataToRender(allCustomers);
+
+    return h.response(transformData).code(200);
   } catch (e) {
     return getBoomError(e);
   }
@@ -62,7 +69,9 @@ export async function getInactiveCustomers(request: IExtendedRequest, h: Respons
       throw new NotFoundError('Not found inactive customers');
     }
 
-    return h.response(inactiveCustomers).code(200);
+    const transformData = transformDataToRender(inactiveCustomers);
+
+    return h.response(transformData).code(200);
   } catch (e) {
     return getBoomError(e);
   }

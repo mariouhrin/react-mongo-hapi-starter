@@ -14,8 +14,8 @@ export function TableAllCustomers() {
   const [openModal, setOpenModal] = useState(false);
   const { appInstance, setAppInstance } = useContext(AppContext);
 
-  const handleOpenModal = (guid) => {
-    setDataForUpdate(data.filter((record) => record.guid === guid));
+  const handleOpenModal = (_id) => {
+    setDataForUpdate(data.filter((record) => record._id === _id));
     setOpenModal(true);
   };
 
@@ -23,8 +23,8 @@ export function TableAllCustomers() {
     setOpenModal(false);
   };
 
-  const deleteCustomerByGuid = async (guid) => {
-    await axiosHandler('delete', `api/customers/${guid}`);
+  const deleteCustomerByID = async (_id) => {
+    await axiosHandler('delete', `api/customers/${_id}`);
     setAppInstance(appInstance + 1);
   };
 
@@ -47,7 +47,7 @@ export function TableAllCustomers() {
         {data.length && (
           <ReactTable
             data={data}
-            columns={tableColumnsAllCustomers(handleOpenModal, deleteCustomerByGuid)}
+            columns={tableColumnsAllCustomers(handleOpenModal, deleteCustomerByID)}
             filterable
             defaultFilterMethod={customFilter}
             defaultPageSize={7}

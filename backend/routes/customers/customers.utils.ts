@@ -1,16 +1,12 @@
-import moment from 'moment';
 import { Collection } from 'mongodb';
 
 import { IExtendedRequest } from '../../types/interfaces/request.interface';
 
-// use when get all customers or all inactive customers
-export function transformingDataToRender(customersData: Customer[]) {
+export function transformDataToRender(customersData: Customer[]) {
   const transformedData = customersData.map((record: Customer) => ({
     update: 'update',
     delete: 'delete',
     ...record,
-    isactive: record['isactive'].toString(),
-    registered: moment.utc(record['registered']).format('YYYY-MM-DD'),
     discount: Math.round(record.balance / 10)
   }));
 

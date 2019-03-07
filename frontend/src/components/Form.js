@@ -20,7 +20,7 @@ export function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { guid, ...sendData } = data;
+    const { _id, ...sendData } = data;
 
     const requests = {
       create: {
@@ -29,7 +29,7 @@ export function Form() {
       },
       update: {
         method: 'put',
-        endpoint: `api/customers/${guid}`
+        endpoint: `api/customers/${_id}`
       }
     };
 
