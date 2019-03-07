@@ -1,4 +1,5 @@
 type Customer = {
+  _id?: string;
   index?: number;
   guid?: string;
   isactive: boolean | string;
@@ -10,5 +11,5 @@ type Customer = {
   email: string;
   phone: string;
   address: string;
-  registered: string;
+  registered?: string;
 };

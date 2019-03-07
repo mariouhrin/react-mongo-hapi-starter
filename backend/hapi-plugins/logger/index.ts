@@ -2,7 +2,7 @@ import { Server, Request, ResponseObject, ResponseToolkit } from 'hapi';
 import Boom from 'boom';
 import logger from './logger';
 
-export default {
+export const LoggerPlugin = {
   name: 'hapi-logger-plugin',
   version: '1.0.0',
   register: async (server: Server, options: any) => {
@@ -22,10 +22,14 @@ export default {
 
       if (request.response instanceof Boom) {
         logger.error(
-          `${requestInfo} -> ${request.response.output.statusCode} ${request.response.stack} in ${duration}ms`
+          `${requestInfo} -> ${request.response.output.statusCode} ${
+            request.response.stack
+          } in ${duration}ms`
         );
       } else {
-        logger.debug(`${requestInfo} -> ${(request.response as ResponseObject).statusCode} in ${duration}ms`);
+        logger.debug(
+          `${requestInfo} -> ${(request.response as ResponseObject).statusCode} in ${duration}ms`
+        );
       }
 
       return h.continue;

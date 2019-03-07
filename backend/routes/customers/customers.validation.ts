@@ -1,16 +1,21 @@
 import Joi from 'joi';
 
 export const JoiCustomer = Joi.object().keys({
+  _id: Joi.string().optional(),
   index: Joi.string().optional(),
   guid: Joi.string().optional(),
-  isactive: Joi.boolean(),
-  balance: Joi.number().integer(),
-  age: Joi.number().integer(),
-  name: Joi.strict(),
-  gender: Joi.string(),
-  company: Joi.string(),
-  email: Joi.string(),
-  phone: Joi.string(),
-  address: Joi.string(),
-  registered: Joi.string()
+  isActive: Joi.boolean(),
+  balance: Joi.number()
+    .integer()
+    .required(),
+  age: Joi.number()
+    .integer()
+    .required(),
+  name: Joi.strict().required(),
+  gender: Joi.string().required(),
+  company: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+  address: Joi.string().required(),
+  registered: Joi.string().optional()
 });

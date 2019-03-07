@@ -1,6 +1,6 @@
 // @ts-ignore
 import { createLogger, format, transports } from 'winston';
-import config from '../config';
+import { config } from '../../config';
 
 // Set level from LOG_LEVEL env variable
 let level = config.logLevel;

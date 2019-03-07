@@ -9,7 +9,7 @@ export default [
     options: {
       description: 'Get all customers'
     },
-    handler: handler.getAllCustomersHandler
+    handler: handler.getAllCustomers
   },
   {
     method: 'GET',
@@ -17,7 +17,7 @@ export default [
     options: {
       description: 'Get total balance of all customers'
     },
-    handler: handler.getTotalBalanceHandler
+    handler: handler.getTotalBalance
   },
   {
     method: 'GET',
@@ -25,20 +25,20 @@ export default [
     options: {
       description: 'Get all inactive customers'
     },
-    handler: handler.getInactiveCustomersHandler
+    handler: handler.getInactiveCustomers
   },
   {
     method: 'GET',
-    path: '/api/customers/{guid}',
+    path: '/api/customers/{_id}',
     options: {
       validate: {
         params: {
-          guid: Joi.string().required()
+          _id: Joi.string().required()
         }
       },
-      description: 'Get customer by guid'
+      description: 'Get customer by _id'
     },
-    handler: handler.getCustomerByGuidHandler
+    handler: handler.getCustomerByGuid
   },
   {
     method: 'POST',
@@ -49,33 +49,33 @@ export default [
       },
       description: 'Create new customer'
     },
-    handler: handler.createCustomerHandler
+    handler: handler.createCustomer
   },
   {
     method: 'PUT',
-    path: '/api/customers/{guid}',
+    path: '/api/customers/{_id}',
     options: {
       validate: {
         params: {
-          guid: Joi.string().required()
+          _id: Joi.string().required()
         },
         payload: JoiCustomer
       },
-      description: 'Update customer'
+      description: 'Update customer data'
     },
-    handler: handler.updateCustomerHandler
+    handler: handler.updateCustomer
   },
   {
     method: 'DELETE',
-    path: '/api/customers/{guid}',
+    path: '/api/customers/{_id}',
     options: {
       validate: {
         params: {
-          guid: Joi.string().required()
+          _id: Joi.string().required()
         }
       },
-      description: 'Delete customer by guid'
+      description: 'Delete customer by _id'
     },
-    handler: handler.deleterCustomerHandler
+    handler: handler.deleterCustomer
   }
 ];

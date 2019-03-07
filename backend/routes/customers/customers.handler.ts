@@ -1,73 +1,156 @@
-import { Request, ResponseToolkit } from 'hapi';
-import * as controller from './customers.controller';
-import { getBoomError } from '../../lib/error-utils';
+import { ResponseToolkit } from 'hapi';
+import { ObjectID } from 'mongodb';
+import _ from 'lodash';
+import moment from 'moment';
+import uuidv4 from 'uuid/v4';
 
-export async function getAllCustomersHandler(request: Request, h: ResponseToolkit) {
+import { IExtendedRequest } from '../../types/interfaces/request.interface';
+import { getBoomError, NotFoundError } from '../../utils/error-utils';
+import { getCustomersCollection, getSequenceCollection, getNextSeq } from './customers.utils';
+
+export async function getAllCustomers(request: IExtendedRequest, h: ResponseToolkit) {
   try {
-    const customers: Customer[] = await controller.getAllCustomers();
-    return h.response(customers).code(200);
+    const customersCollection = await getCustomersCollection(request);
+    const allCustomers: Customer[] = await customersCollection.find().toArray();
+
+    if (_.isEmpty(allCustomers)) {
+      throw new NotFoundError('Not found customers data');
+    }
+
+    return h.response(allCustomers).code(200);
   } catch (e) {
     return getBoomError(e);
   }
 }
 
-export async function getTotalBalanceHandler(request: Request, h: ResponseToolkit) {
+export async function getTotalBalance(request: IExtendedRequest, h: ResponseToolkit) {
   try {
-    const totalBalance = await controller.getTotalBalance();
+    const customersCollection = await getCustomersCollection(request);
+    const getTotalBalance = await customersCollection
+      .aggregate([
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: '$balance'
+            }
+          }
+        }
+      ])
+      .toArray();
+
+    if (_.isEmpty(getTotalBalance)) {
+      throw new NotFoundError('Cannot get total balance');
+    }
+
+    const totalBalance = getTotalBalance[0].total;
+
     return h.response({ totalBalance }).code(200);
   } catch (e) {
     return getBoomError(e);
   }
 }
 
-export async function getInactiveCustomersHandler(request: Request, h: ResponseToolkit) {
+export async function getInactiveCustomers(request: IExtendedRequest, h: ResponseToolkit) {
   try {
-    const inactiveCustomers: Customer[] = await controller.getInactiveCustomers();
+    const customersCollection = await getCustomersCollection(request);
+    const inactiveCustomers: Customer[] = await customersCollection
+      .find({ isActive: false })
+      .toArray();
+
+    if (_.isEmpty(inactiveCustomers)) {
+      throw new NotFoundError('Not found inactive customers');
+    }
+
     return h.response(inactiveCustomers).code(200);
   } catch (e) {
     return getBoomError(e);
   }
 }
 
-export async function getCustomerByGuidHandler(request: Request, h: ResponseToolkit) {
-  const { guid } = request.params;
+export async function getCustomerByGuid(request: IExtendedRequest, h: ResponseToolkit) {
+  const _id = new ObjectID(request.params._id);
 
   try {
-    const customer: Customer = await controller.getCustomerByGuid(guid);
+    const customersCollection = await getCustomersCollection(request);
+    const customer: Customer = await customersCollection.findOne({ _id });
+
+    if (_.isEmpty(customer)) {
+      throw new NotFoundError('Not found customer by _id');
+    }
+
     return h.response(customer).code(200);
   } catch (e) {
     return getBoomError(e);
   }
 }
 
-export async function createCustomerHandler(request: Request, h: ResponseToolkit) {
+export async function createCustomer(request: IExtendedRequest, h: ResponseToolkit) {
   const customer: Customer = request.payload as Customer;
 
   try {
-    const customerGuid = await controller.createCustomer(customer);
-    return h.response({ customerGuid }).code(201);
+    const sequence = await getSequenceCollection(request);
+    const customersCollection = await getCustomersCollection(request);
+
+    const newCustomerData = {
+      index: await getNextSeq(sequence),
+      guid: uuidv4(),
+      isActive: false,
+      ...customer,
+      registered: moment.utc(new Date()).format('YYYY-MM-DD')
+    };
+
+    const response = await customersCollection.insertOne(newCustomerData);
+
+    if (!response.insertedId) {
+      throw new NotFoundError('Cannot insert new customer data');
+    }
+
+    return h.response({ customerId: response.insertedId }).code(201);
   } catch (e) {
     return getBoomError(e);
   }
 }
 
-export async function updateCustomerHandler(request: Request, h: ResponseToolkit) {
-  const { guid } = request.params;
+export async function updateCustomer(request: IExtendedRequest, h: ResponseToolkit) {
+  const _id = new ObjectID(request.params._id);
   const customer: Customer = request.payload as Customer;
 
   try {
-    await controller.updateCustomer(customer, guid);
+    const customersCollection = await getCustomersCollection(request);
+    const checkCustomer: Customer = await customersCollection.findOne({ _id });
+
+    if (_.isEmpty(checkCustomer)) {
+      throw new NotFoundError('Not found customer by _id');
+    }
+
+    const customerDataForUpdate = {
+      ...customer,
+      registered: moment.utc(new Date()).format('YYYY-MM-DD')
+    };
+
+    await customersCollection.updateOne({ _id }, { $set: { ...customerDataForUpdate } });
+
     return h.response().code(204);
   } catch (e) {
     return getBoomError(e);
   }
 }
 
-export async function deleterCustomerHandler(request: Request, h: ResponseToolkit) {
-  const { guid } = request.params;
+export async function deleterCustomer(request: IExtendedRequest, h: ResponseToolkit) {
+  const _id = new ObjectID(request.params._id);
 
   try {
-    await controller.deleteCustomerByGuid(guid);
+    const customersCollection = await getCustomersCollection(request);
+
+    const checkCustomer: Customer = await customersCollection.findOne({ _id });
+
+    if (_.isEmpty(checkCustomer)) {
+      throw new NotFoundError('Not found customer by _id');
+    }
+
+    customersCollection.deleteOne({ _id });
+
     return h.response().code(204);
   } catch (e) {
     return getBoomError(e);
